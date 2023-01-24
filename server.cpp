@@ -152,33 +152,6 @@ main(void) {
 
   } while (end_flag == false);
 
-  // int cfd = accept(sfd, &client_info, &client_info_len);
-  // if (cfd < 0) {
-  //   perror("accept");
-  //   close(sfd);
-  //   exit(EXIT_FAILURE);
-  // }
-
-  // while (1) {
-  //   memset(buffer, 0, BUFFER_SIZE);
-
-  //   ssize_t recv_len = recv(cfd, buffer, BUFFER_SIZE - 1, 0);
-  //   if (recv_len < 0) {
-  //     perror("recv");
-  //     break;
-  //   }
-  //   printf("recieved: %s\n", buffer);
-
-  //   size_t buffer_len = strlen(buffer);
-  //   buffer[buffer_len] = '$';
-  //   buffer[buffer_len + 1] = '\0';
-
-  //   ssize_t send_len = send(cfd, buffer, buffer_len + 1, 0);
-  //   if (send_len < 0) {
-  //     perror("send");
-  //     break;
-  //   }
-  // }
   for (int i = 0; i <= max_sfd; ++i) {
     if (FD_ISSET(i, &master_set))
       close(i);
