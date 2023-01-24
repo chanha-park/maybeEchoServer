@@ -12,13 +12,13 @@
 
 int
 main(void) {
-  struct sockaddr_in server_info = {0};
+  struct sockaddr_in server_info;
   socklen_t server_info_len = sizeof(server_info);
 
   server_info.sin_family = AF_INET;
   server_info.sin_port = htons(1337);
 
-  struct sockaddr client_info = {0};
+  struct sockaddr client_info;
   socklen_t client_info_len = sizeof(client_info);
 
   int sfd = socket(AF_INET, SOCK_STREAM, 0);

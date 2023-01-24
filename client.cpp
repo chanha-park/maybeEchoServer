@@ -12,7 +12,7 @@
 
 int
 main(void) {
-  struct sockaddr_in server_info = {0};
+  struct sockaddr_in server_info;
   socklen_t server_info_len = sizeof(server_info);
 
   server_info.sin_family = AF_INET;
