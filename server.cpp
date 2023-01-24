@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/select.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -21,11 +22,20 @@ main(void) {
   struct sockaddr client_info;
   socklen_t client_info_len = sizeof(client_info);
 
+#if defined(__APPLE__)
   int sfd = socket(AF_INET, SOCK_STREAM, 0);
+#else
+  int sfd = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
+#endif
+
   if (sfd < 0) {
     perror("socket");
     exit(EXIT_FAILURE);
   }
+
+#if defined(__APPLE__)
+  fcntl(sfd, F_SETFL, O_NONBLOCK);
+#endif
 
   if (bind(sfd, (struct sockaddr*)&server_info, server_info_len) < 0) {
     perror("bind");
@@ -69,5 +79,6 @@ main(void) {
     }
   }
   close(cfd);
+  close(sfd);
   return (0);
 }
