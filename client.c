@@ -36,7 +36,8 @@ main(void) {
 
   while (1) {
     memset(buff_read, 0, BUFFER_SIZE);
-    scanf("%s", buff_write);
+    if (scanf("%s", buff_write) != 1)
+      break;
     if (strlen(buff_write) >= BUFFER_SIZE) {
       printf("input tooo long. try again\n");
       continue;
