@@ -65,6 +65,20 @@ main(void) {
     exit(EXIT_FAILURE);
   }
 
+  fd_set master_set, working_set;
+  int max_sfd;
+
+  FD_ZERO(&master_set);
+  max_sfd = sfd;
+  FD_SET(sfd, &master_set);
+
+  (void)working_set;
+
+  struct timeval timeout;
+
+  timeout.tv_sec = 3 * 60;
+  timeout.tv_usec = 0;
+
   int cfd = accept(sfd, &client_info, &client_info_len);
   if (cfd < 0) {
     perror("accept");
