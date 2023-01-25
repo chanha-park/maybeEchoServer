@@ -38,8 +38,20 @@ main(void) {
   }
 
 #if defined(__APPLE__)
-  fcntl(sfd, F_SETFL, O_NONBLOCK);
+  if (fcntl(sfd, F_SETFL, O_NONBLOCK) < 0) {
+    perror("fcntl");
+    close(sfd);
+    exit(EXIT_FAILURE);
+  }
 #endif
+
+  int on = 1;
+
+  if (setsockopt(sfd, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on)) < 0) {
+    perror("setsockopt");
+    close(sfd);
+    exit(EXIT_FAILURE);
+  }
 
   if (bind(sfd, (struct sockaddr*)&server_info, server_info_len) < 0) {
     perror("bind");
