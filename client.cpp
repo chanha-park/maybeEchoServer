@@ -9,15 +9,21 @@
 #include <unistd.h>
 
 #define BUFFER_SIZE 1024
+#define DEFAULT_PORT 1337
 
 int
-main(void) {
+main(int argc, char** argv) {
   struct sockaddr_in server_info;
   socklen_t server_info_len = sizeof(server_info);
 
   server_info.sin_family = AF_INET;
   server_info.sin_addr.s_addr = htonl(0x7f000001);
-  server_info.sin_port = htons(1337);
+  if (argc == 1)
+    server_info.sin_port = htons(DEFAULT_PORT);
+  else if (argc == 2)
+    server_info.sin_port = htons(atoi(argv[1]));
+  else
+    exit(1);
 
   int sfd = socket(AF_INET, SOCK_STREAM, 0);
   if (sfd < 0) {
