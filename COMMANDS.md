@@ -3,7 +3,7 @@
 0. subject requirements
     - MUST NOT handle server-server communication
     - authenticate, set nickname, username
-    - join, leave channel
+    - join(JOIN), leave(PART) channel
     - send, recv msg
     - private msg
     - operator & related cmds
@@ -49,6 +49,16 @@
 5. numeric replies
 	1. not allowed to originate from client. if so, ignored by server
 	2. 'sender-prefix', 'three-digit-numeric', 'target'
+
+6. IRC concepts
+	1. For one-to-one communication, server sends messages to only one direction. i.e. directly to the client using shortest path
+	2. For one-to-many communication,
+		- to group: only servers with related users get messages. that server send messages to each clients
+		- to host/server mask: when sending to lots of users. "the messages are only setn to locations where users are, in a fashion similar to that of channels."
+	3. For one-to-all: broadcast messages. sent to every client, server. can cause large traffic
+		- no client - client
+		- client to server: commands that result change of state info.
+		- server - server : won't be implemented
 
 misc
     1. {}| are lowercase equivalents of the []\
