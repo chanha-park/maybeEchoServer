@@ -14,6 +14,7 @@
         - if multiple PASS cmds, only the last one is used. may not changed after that.
 
         - numeric replies: ERR_NEEDMOREPARAMS ERR_ALREADYREGISTRED
+
     2. NICK 'nickname' '[' 'hopcount' ']'
         - set or change nickname.
         - collision within directly connected server-client -> reply ERR_NICKCOLLISION. no KILL
@@ -23,6 +24,15 @@
         <!-- - collision while trying to change nickname -> old nickname are also removed   -->
 
         - numeric replies: ERR_NONICKNAMEGIVEN ERR_ERRONEUSNICKNAME ERR_NICKNAMEINUSE ERR_NICKCOLLISION
+
+	3. USE 'username' 'hostname' 'servername' 'realname'
+		- used beginning of connection
+		- user is registered only after NICK & USER cmds
+		- If from directly connected client -> hostname, servername are ignored
+		- realname must be prefixed with a colon (':')
+		- 'Identity server' is recommended
+
+        - numeric replies: ERR_NEEDMOREPARAMS ERR_ALREADYREGISTRED
 
 2. Channel Operation
 3. Server queries & commands
