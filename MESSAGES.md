@@ -25,7 +25,7 @@
 
         - numeric replies: ERR_NONICKNAMEGIVEN ERR_ERRONEUSNICKNAME ERR_NICKNAMEINUSE ERR_NICKCOLLISION
 
-	3. USE 'username' 'hostname' 'servername' 'realname'
+	3. USER 'username' 'hostname' 'servername' 'realname'
 		- used beginning of connection
 		- user is registered only after NICK & USER cmds
 		- If from directly connected client -> hostname, servername are ignored
