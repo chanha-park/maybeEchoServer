@@ -21,7 +21,8 @@
 3. channel
     1. created implicitly, removed when no user left
     2. begins with '&' or '#', maximum 200 character
-        1. '&': local to the created server
+        1. '&': local to the created server. only clients in that server can join
+        2. '#': known to all servers
     3. must not contain ' ', '^G' (ASCII 7), and ','
     4. try to join
         - non-existing-channel -> create and become a operator
