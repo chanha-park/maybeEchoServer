@@ -119,7 +119,7 @@
     8. KICK 'channel' 'user' '[' 'comment' ']'
         - remove target user from the channel (forced PART)
         - only chanop can kick other user -> server check if request is from the chanop
-        - XXX chanop can KICK chanop ????
+        - XXX can chanop KICK chanop ????
 
         - numeric replies: ERR_NEEDMOREPARAMS ERR_NOSUCHCHANNEL ERR_BADCHANMASK ERR_CHANOPRIVSNEEDED ERR_NOTONCHANNEL
 
@@ -145,24 +145,106 @@
             - u: show how long server has been up
 
     3. LINKS '[' '[' 'remote server' ']' 'server mask' ']'
+        - list servers connected to this server
+        - XXX ignore?
+        - if mask given, list servers only matches the mask.
+        - if not given, return full list
+        - if remote server given, this command is forwarded to that server
+
+        - numeric replies: ERR_NOSUCHSERVER RPL_LINKS RPL_ENDOFLINKS
+
     4. TIME '[' 'server' ']'
+        - return local time of specified server
+        - if param not given, server handling the command reply
+
+        - numeric replies: ERR_NOSUCHSERVER RPL_TIME
+
     5. CONNECT 'target server' '[' 'port' '[' 'remote server' ']' ']'
+        - force server to connect to other server // XXX ignore?
+        - only chanop can use it
+
+        - numeric replies: ERR_NOSUCHSERVER ERR_NOPRIVILEGES ERR_NEEDMOREPARAMS
+
     6. TRACE '[' 'server' ']'
+        - find route to specific server
+        - if param omitted, reply with list of directly connected servers
+        - param can be a server or nickname
+
+        - numeric replies: ERR_NOSUCHSERVER ERR_TRACELINK RPL_TRACECONNECTING RPL_TRACEHANDSHAKE RPL_TRACEUNKNOWN RPL_TRACEOPERATOR RPL_TRACEUSER RPL_TRACESERVER RPL_TRACESERVICE RPL_TRACENEWTYPE RPL_TRACECLASS
+
     7. ADMIN '[' 'server' ']'
+        - find the name of the admin of the given server / or current server
+        - server must be able to forward ADMIN message to other servers
+
+        - numeric replies: ERR_NOSUCHSERVER RPL_ADMINME RPL_ADMINLOC1 RPL_ADMINLOC2 RPL_ADMINEMAIL
+
     8. INFO '[' 'server' ']'
+        - return server info - version, compiled when, patchlevel, started time, etc.
+
+        - numeric replies: ERR_NOSUCHSERVER RPL_INFO RPL_ENDOFINFO
 
 4. Sending messages
     1. PRIVMSG 'receiver' {, 'receiver' } 'text to be sent'
+        - 'receiver' can be both nicknames or channels
+        - if chanop, 'receiver' can be hostmask(#mask) or servermask($mask).
+            - mask must have at least one '.', without wildcards after that. (prevent sendint to #* or $*)
+
+        - numeric replies: ERR_NORECIPIENT ERR_NOTEXTTOSEND ERR_CANNOTSENDTOCHAN ERR_NOTOPLEVEL ERR_WILDTOPLEVEL ERR_TOOMANYTARGETS ERR_NOSUCHNICK RPL_AWAY
+
     2. NOTICE 'nickname' 'text'
+        - no automatic reply in response to prevent auto-reply-loop
+        - no error reply
+
+        - numeric replies: ERR_NORECIPIENT ERR_NOTEXTTOSEND ERR_CANNOTSENDTOCHAN ERR_NOTOPLEVEL ERR_WILDTOPLEVEL ERR_TOOMANYTARGETS ERR_NOSUCHNICK RPL_AWAY
 
 5. User-based queries
+    - show visible users only
     1. WHO '[' 'name' '[' 'o' ']' ']'
+        - list of user info who matches 'name' param
+        - no param (or use "0" for name param) -> all (visible && no-common-channel) users
+        - match order: channel - host - server - realname - nickname
+
+        - numeric replies: ERR_NOSUCHSERVER RPL_WHOREPLY RPL_ENDOFWHO
+
     2. WHOIS '[' 'server' ']' 'nickmask' '[' , 'nickmask' '[' , ... ']' ']'
+        - info about specific user
+        - server answer with several numeric replies
+        - can specify server to know local info
+
+        - numeric replies: ERR_NOSUCHSERVER ERR_NONICKNAMEGIVEN RPL_WHOISUSER RPL_WHOISCHANNELS RPL_WHOISCHANNELS RPL_WHOISSERVER RPL_AWAY RPL_WHOISOPERATOR RPL_WHOISIDLE ERR_NOSUCHNICK RPL_ENDOFWHOIS
+
     3. WHOWAS 'nickname' '[' 'count' '[' 'server' ']' ']'
+        - info about left or changed nickname
+        - server backward-search nickname history. no wildcards match
+        - if positive 'count' given, search up to 'count' entries
+
+        - numeric replies: ERR_NONICKNAMEGIVEN ERR_WASNOSUCHNICK RPL_WHOWASUSER RPL_WHOISSERVER RPL_ENDOFWHOWAS
 
 6. Misc messages
     1. KILL 'nickname' 'comment'
-    2. PING 'server1' '[' 'server2' ']'
-    3. PONG 'daemon1' '[' 'daemon2' ']'
-    4. ERROR 'error message'
+        - used by server (or maybe chanop) for duplicate nickname. remove those all
+        - 'comment' must contain actual reason, and kill-path
 
+        - numeric replies: ERR_NOPRIVILEGES ERR_NEEDMOREPARAMS ERR_NOSUCHNICK ERR_CANTKILLSERVER
+
+    2. PING 'server1' '[' 'server2' ']'
+        - test connection. sent regulary if no activity detected.
+        - response timeout -> close connection
+        - if client recieve this, must PONG to 'server1'
+        - server don't response to PING
+
+        - numeric replies: ERR_NOORIGIN ERR_NOSUCHSERVER
+
+    3. PONG 'daemon1' '[' 'daemon2' ']'
+        - reply to PING
+        - forwarded to 'daemon2' if given.
+        - 'daemon1' is responder
+
+        - numeric replies: ERR_NOORIGIN ERR_NOSUCHSERVER
+
+    4. ERROR 'error message'
+        - report fatal error in server-server // XXX ignore?
+        - must not accepted from any normal unknown clients
+        -  When a server sends a received ERROR message to its operators, the message should be encapsulated inside a NOTICE message, indicating that the client was not responsible for the error.
+
+        - numeric replies: none
