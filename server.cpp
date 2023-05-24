@@ -70,7 +70,7 @@ socklen_t  client_info_len;
       exit(EXIT_FAILURE);
     }
 
-    if (listen(sfd, 0) < 0) {
+    if (listen(sfd, 16) < 0) {
       perror("listen");
       close(sfd);
       exit(EXIT_FAILURE);
