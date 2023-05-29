@@ -30,9 +30,6 @@ malloc_error(void) {
   exit(1);
 }
 
-static const int read_size = 4096;
-char read_buffer[4096];
-
 char write_buffer[1 << 28];
 ssize_t write_size;
 
@@ -55,14 +52,23 @@ extract_msg(char** buf, char** msg) {
 }
 
 char*
-str_join(char* s1, char* s2) {
-  size_t len1 = strlen(s1);
-  size_t len2 = strlen(s2);
+ft_substr(char* s, size_t start, size_t len) {
+  char* rtn = malloc(sizeof(char) * (len + 1));
+  if (!rtn)
+    malloc_error();
+  memcpy(rtn, s + start, len);
+  rtn[len] = '\0';
+  return rtn;
+}
+
+char*
+str_join_n(char* s1, size_t len1, char* s2, size_t len2) {
   char* newstr = malloc(sizeof(char) * (len1 + len2 + 1));
   if (newstr == NULL)
     malloc_error();
   memcpy(newstr, s1, len1);
   memcpy(newstr + len1, s2, len2);
+  newstr[len1 + len2] = '\0';
 
   return newstr;
 }
@@ -169,17 +175,58 @@ main(int argc, char** argv) {
         /* broadcast_except(test_fd, sfd, max_fd, &master_set); */
         //
 
-        char* msg = NULL;
-        (void)msg;
+        char* msg;
+        char* line;
+        char* tmp;
+        char read_buffer[4096];
+        static const size_t read_size = 4096;
+
+        msg = NULL;
+        line = NULL;
+
+        /* while (1) {                                                        */
+        /*   if (msg) {                                                       */
+        /*     char* ptr = ft_strchr(msg, '\n');                              */
+        /*     if (ptr != NULL) {                                             */
+        /*       line = ft_substr(msg, 0, ptr - msg + 1);                     */
+
+        /*       write_size                                                   */
+        /*           = sprintf(write_buffer, "client %d: %s", test_fd, line); */
+        /*       broadcast_except(test_fd, sfd, max_fd, &master_set);         */
+        /*       free(line);                                                  */
+        /*       line = NULL;                                                 */
+
+        /*       tmp = msg;                                                   */
+        /*       msg = ft_substr(tmp, ptr - tmp, strlen(ptr));                */
+        /*       free(tmp);                                                   */
+        /*     } else {  //  no newline in msg                                */
+        /*         // read                                                    */
+        /*     }                                                              */
+
+        /*   } else { // msg == NULL                                          */
+
+        /*       ssize_t recv_rtn = recv(test_fd, read_buffer, read_size, 0); */
+
+        /*   }                                                                */
+        /* }                                                                  */
 
         while (1) {
+          if (read_buffer == NULL) {
+            read_buffer = malloc(sizeof(char) * read_size);
+            if (read_buffer == NULL)
+              malloc_error();
+          }
+
           ssize_t recv_rtn = recv(test_fd, read_buffer, read_size, 0);
 
           if (recv_rtn < 0) {
-            write_size = sprintf(write_buffer, "client %d: %s", test_fd, msg);
-            broadcast_except(test_fd, sfd, max_fd, &master_set);
-            free(msg);
-            msg = NULL;
+            if (msg) {
+              write_size = sprintf(write_buffer, "client %d: %s", test_fd, msg);
+              broadcast_except(test_fd, sfd, max_fd, &master_set);
+              free(msg);
+              msg = NULL;
+            }
+
             break;
           }
 
